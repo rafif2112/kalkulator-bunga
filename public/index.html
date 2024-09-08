@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Bunga Tunggal dan Majemuk</title>
+    <link rel="stylesheet" href="../src/output.css">
+    <style>
+        @media (min-width: 1024px) {
+            #box-hasil {
+                width: 60vh;
+            }
+            .in-box {
+                height: 75vh;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            #box-hasil {
+                width: 100vh;
+            }
+            .in-box {
+                height: 53vh;
+            }
+        }
+        @media (max-width: 760px) {
+            #opsi, #opsi-tahun, #opsi-bulan {
+                width: 80%;
+            }
+        }
+        #opsi, #opsi-tahun, #opsi-bulan {
+                width: 85%;
+            }
+        @media (max-width: 450px) {
+            #label-opsi-bulan {
+                display: inline;
+                overflow-x: scroll;
+                white-space: nowrap;
+            }
+        }
+    </style>
+    <script>
+        function gantiOpsi() {
+            const opsi = document.getElementById('opsi').value;
+            const opsiTahun = document.getElementById('opsi-tahun');
+            const opsiBulan = document.getElementById('opsi-bulan');
+    
+            if (opsi === 'tahun') {
+                opsiTahun.style.display = 'flex';
+                opsiBulan.style.display = 'none';
+            } else if (opsi === 'bulan') {
+                opsiTahun.style.display = 'none';
+                opsiBulan.style.display = 'flex';
+            }
+        }
+    
+            function hitungBungaTunggal(modalAwal, sukuBunga, waktu) {
+                let bungaTunggal = modalAwal * sukuBunga / 100 * waktu;
+                return bungaTunggal;
+            }
+    
+            function hitungBungaMajemuk(modalAwal, sukuBunga, waktu) {
+                let count = modalAwal * (1 + (sukuBunga/100)) ** waktu;
+                let bungaMajemuk = count - modalAwal;
+                return bungaMajemuk;
+            }
+    
+            function menghitungBunga(event) {
+                event.preventDefault();
+    
+                const modal = document.getElementById('jumlah').value;
+                const bunga = document.getElementById('bunga').value;
+                const opsi = document.getElementById('opsi').value;
+                const lamaTahun = document.getElementById('lama-tahun').value;
+                const lamaBulan = document.getElementById('lama-bulan').value;
+                const tipeBunga = document.getElementById('tipe').value;
+    
+                let bungaTunggal = hitungBungaTunggal(modal, bunga, opsi === 'tahun' ? lamaTahun : lamaBulan/12);
+                let bungaMajemuk = hitungBungaMajemuk(modal, bunga, opsi === 'tahun' ? lamaTahun : lamaBulan/12);
+    
+                if (lamaTahun == 0 && lamaBulan == 0) {
+                    alert('Masukkan lama pinjaman');
+                    return false; 
+                }
+                if (tipeBunga == 'tunggal') {
+                    document.getElementById('title').innerHTML = 'Bunga Tunggal';
+                    document.getElementById('hasil_bunga').value = `Rp. ` + Intl.NumberFormat().format(bungaTunggal);
+                    document.getElementById('m').value = `Rp. ` + Intl.NumberFormat().format(modal);
+                    document.getElementById('mn').value = `Rp. ` + Intl.NumberFormat().format(parseInt(modal) + parseInt(bungaTunggal));
+                } else if (tipeBunga == 'majemuk') {
+                    document.getElementById('title').innerHTML = 'Bunga Majemuk';
+                    document.getElementById('hasil_bunga').value = `Rp. ` + Intl.NumberFormat().format(bungaMajemuk);
+                    document.getElementById('m').value = `Rp. ` + Intl.NumberFormat().format(modal);
+                    document.getElementById('mn').value = `Rp. ` + Intl.NumberFormat().format(parseInt(modal) + parseInt(bungaMajemuk));
+                }
+    
+                document.getElementById('box-hasil').style.display = 'block';
+            }
+    </script>
+</head>
+
+<body class="bg-gray-100">
+    <header class="w-auto h-20 bg-white shadow-md flex justify-start items-center">
+        <h2 class="font-sans sm:text-lg md:text-lg lg:text-xl xl:text-2xl px-5">Bunga Tunggal dan Majemuk</h2>
+    </header>
+    <main>
+        <div class="flex justify-center items-center flex-wrap gap-10 p-5" style="height: 90vh;">
+            <div class="flex justify-center items-center" style="width: 100vh;">
+                <div class="bg-white rounded-xl shadow-xl" style="width: 100%; height: 75vh;">
+                    <form class="p-8" onsubmit="menghitungBunga(event)">
+                        <div class="flex flex-col mb-2">
+                            <label for="jumlah" class="mb-2">Jumlah Pinjaman</label>
+                            <input type="number" name="jumlah" id="jumlah" class="rounded px-2 py-1 mb-2 border-none bg-slate-50 shadow-inner h-12" placeholder="Pinjaman" required>
+                        </div>
+                        <div class="flex flex-col mb-2">
+                            <label for="bunga" class="mb-2">Bunga</label>
+                            <input type="number" name="bunga" id="bunga" class="rounded px-2 py-1 mb-2 border-none bg-slate-50 shadow-inner h-12" placeholder="dalam persen (per tahun)" max="100" required>
+                        </div>
+                        
+
+                        <div class="flex justify-between">
+                            <div class="flex flex-col mb-2">
+                                <label for="opsi" id="label-opsi-bulan" class="mb-2">bulan/Tahun</label>
+                                <select name="opsi" id="opsi" class="rounded px-2 py-1 mb-2 border-none bg-slate-50 shadow-inner h-12" onchange="gantiOpsi()" required>
+                                    <option value="" selected disabled>Pilih</option>
+                                    <option value="tahun">Tahun</option>
+                                    <option value="bulan">bulan</option>
+                                </select>
+                            </div>
+                            <div class="flex-col mb-2" id="opsi-tahun" style="display: flex;">
+                                <label for="lama-tahun" class="mb-2">Lama Pinjaman (tahun)</label>
+                                <input type="number" name="lama-tahun" id="lama-tahun" class="rounded px-2 py-1 mb-2 border-none bg-slate-50 shadow-inner h-12" placeholder="dalam tahun" max="100">
+                            </div>
+                            <div class="flex-col mb-2" id="opsi-bulan" style="display: none;">
+                                <label for="lama-bulan" class="mb-2">Lama Pinjaman (bulan)</label>
+                                <input type="number" name="lama-bulan" id="lama-bulan" class="rounded px-2 py-1 mb-2 border-none bg-slate-50 shadow-inner h-12" placeholder="dalam bulan" max="100">
+                            </div>
+                        </div>
+
+
+                        <div class="flex flex-col mb-2">
+                            <label for="tipe" class="mb-2">Tipe Bunga</label>
+                            <select name="tipe" id="tipe" class="rounded px-2 py-1 mb-2 border-none bg-slate-50 shadow-inner h-12" required>
+                                <option value="" selected disabled>Pilih</option>
+                                <option value="tunggal">Tunggal</option>
+                                <option value="majemuk">Majemuk</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 mt-2 rounded">Hitung</button>
+                    </form>
+                </div>
+            </div>
+            <div class="justify-center items-center" id="box-hasil" style="display: none;">
+                <div class="in-box bg-white rounded-xl shadow-xl" style="width: 100%;">
+                    <div class="p-8">
+                        <h2 class="sm:text-sm md:text-lg lg:text-xl xl:text-2xl font-sans font-medium text-gray-500 text-center" id="title"></h2>
+                        <div class="py-2">
+                            <div class="flex flex-col gap-3">
+                                <label for="hasil_bunga">Bunga :</label>
+                                <input type="text" class="rounded px-2 py-1 mb-2 border-none bg-slate-50 shadow-inner h-12" id="hasil_bunga" style="width: 100%;" value="" readonly>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <label for="m">Modal Awal :</label>
+                                <input type="text" class="rounded px-2 py-1 mb-2 border-none bg-slate-50 shadow-inner h-12" id="m" style="width: 100%;" value="" readonly>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <label for="mn">Modal Akhir :</label>
+                                <input type="text" class="rounded px-2 py-1 mb-2 border-none bg-slate-50 shadow-inner h-12" id="mn" style="width: 100%;" value="" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
