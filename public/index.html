@@ -79,12 +79,7 @@
             } else if (opsi === 'tahun') {
                 waktu = lamaTahun;
             }
-
-            if (lamaTahun == 0) {
-                alert('Masukkan lama pinjaman');
-                return false;
-            }
-
+            
             let bungaTunggal = hitungBungaTunggal(modal, bunga, waktu);
             let bungaMajemuk = hitungBungaMajemuk(modal, bunga, waktu);
 
